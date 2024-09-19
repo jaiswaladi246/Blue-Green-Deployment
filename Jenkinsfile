@@ -61,12 +61,11 @@ pipeline {
             }
         }
         
-        stage('Deploy MySQL Service and StatefulSet') {
+        stage('Deploy MySQL Deployment and Service') {
             steps {
                 script {
                     withKubeConfig(caCertificate: '', clusterName: 'devopsshack-cluster', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://46743932FDE6B34C74566F392E30CABA.gr7.ap-south-1.eks.amazonaws.com') {
-                        sh "kubectl apply -f mysql-service.yml -n ${KUBE_NAMESPACE}"
-                        sh "kubectl apply -f mysql-deployment.yml -n ${KUBE_NAMESPACE}"  // Ensure you have the MySQL deployment YAML ready
+                        sh "kubectl apply -f mysql-ds.yml -n ${KUBE_NAMESPACE}"  // Ensure you have the MySQL deployment YAML ready
                     }
                 }
             }
@@ -102,7 +101,7 @@ pipeline {
             }
         }
         
-        stage('Switch Traffic') {
+        stage('Switch Traffic Between Blue & Green Environment') {
             when {
                 expression { return params.SWITCH_TRAFFIC }
             }
